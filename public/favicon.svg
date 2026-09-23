@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Prism">
+  <rect width="32" height="32" rx="8" fill="#4F46E5"/>
+  <!-- 프리즘 — 작은 크기에서도 뭉개지지 않도록 속을 채운다 -->
+  <path d="M11.5 7 19 24.5H4.5Z" fill="#FFFFFF"/>
+  <!-- 갈라져 나오는 빛 -->
+  <path d="M15.5 12h11.5" stroke="#FBBF24" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M17.5 17h9.5" stroke="#34D399" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M19.5 22h7.5" stroke="#38BDF8" stroke-width="2.6" stroke-linecap="round"/>
+</svg>

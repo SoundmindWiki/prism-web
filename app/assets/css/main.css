@@ -1,0 +1,201 @@
+@import "tailwindcss";
+
+/* 다크 모드는 시스템 설정을 따라가되, 헤더의 토글로 덮어쓸 수 있게 한다.
+   그래서 media 쿼리 대신 html[data-theme] 를 기준으로 삼는다. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ---------------------------------------------------------------------------
+   디자인 토큰 — 토스 결
+   화면마다 쓰는 유틸리티(slate-*, indigo-* …)는 그대로 두고 토큰 값만 갈아 끼운다.
+   그래서 색을 다시 손볼 일이 생기면 이 블록만 고치면 된다.
+   --------------------------------------------------------------------------- */
+@theme {
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, "D2Coding", monospace;
+
+  /* 회색 — 토스 그레이. 400/500 은 기본 팔레트보다 진해서 본문 대비가 올라간다. */
+  --color-slate-50: #f9fafb;
+  --color-slate-100: #f2f4f6;
+  --color-slate-200: #e5e8eb;
+  --color-slate-300: #c9cdd2;
+  --color-slate-400: #8b95a1;
+  --color-slate-500: #6b7684;
+  --color-slate-600: #4e5968;
+  --color-slate-700: #3d4653;
+  --color-slate-800: #252b34;
+  --color-slate-900: #191f28;
+  --color-slate-950: #0f1217;
+
+  /* 파랑 — 600 이 토스 블루(#3182F6). 버튼이 쉬고 있을 때 보이는 색이라 여기 뒀다. */
+  --color-indigo-50: #eff6ff;
+  --color-indigo-100: #dbeafe;
+  --color-indigo-200: #b3d4ff;
+  --color-indigo-300: #82b7ff;
+  --color-indigo-400: #5a9cff;
+  --color-indigo-500: #4593fc;
+  --color-indigo-600: #3182f6;
+  --color-indigo-700: #2272eb;
+  --color-indigo-800: #1b64da;
+  --color-indigo-900: #1957c2;
+
+  /* 빨강 — 경고·삭제 */
+  --color-rose-50: #fff0f1;
+  --color-rose-100: #ffe0e3;
+  --color-rose-300: #ff8b95;
+  --color-rose-400: #f76a77;
+  --color-rose-500: #f04452;
+  --color-rose-600: #e42939;
+  --color-rose-700: #c81f2d;
+
+  /* 초록 — 성공 */
+  --color-emerald-50: #e8f8f1;
+  --color-emerald-300: #5bd9a6;
+  --color-emerald-400: #2ecd8c;
+  --color-emerald-500: #15c47e;
+  --color-emerald-700: #0a9a5f;
+  --color-emerald-800: #087a4c;
+
+  /* 노랑 — 초안·주의 */
+  --color-amber-100: #fff5d9;
+  --color-amber-200: #ffe9ad;
+  --color-amber-300: #ffd873;
+  --color-amber-400: #ffc62e;
+  --color-amber-500: #f5a623;
+  --color-amber-600: #d98e10;
+  --color-amber-800: #8a5a00;
+  --color-amber-900: #6b4500;
+
+  /* 모서리 — 기본값보다 한 단계씩 둥글게 */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+
+  /* 움직임 — 빠르게 시작해서 부드럽게 멈추는 곡선 하나로 통일한다. */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* 아래에서 떠오르며 나타난다. 지연을 주면 차례로 올라온다. */
+  --animate-rise: rise 0.55s var(--ease-out-soft) both;
+  /* 배경의 흐릿한 덩어리가 천천히 흐른다. */
+  --animate-drift: drift 16s ease-in-out infinite alternate;
+  /* 로그인 실패처럼 되돌려 보내야 할 때. */
+  --animate-shake: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  /* 불러오는 중인 자리 위를 쓸고 지나간다. */
+  --animate-shimmer: shimmer 1.6s linear infinite;
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes drift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to { transform: translate3d(-3rem, 2.5rem, 0) scale(1.15); }
+  }
+
+  @keyframes shimmer {
+    from { background-position: 150% 0; }
+    to { background-position: -150% 0; }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-5px); }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(2px); }
+  }
+
+  /* 그림자 — 선 대신 높이로 면을 나눈다. 진하지 않게. */
+  --shadow-xs: 0 1px 2px rgb(15 18 23 / 0.04);
+  --shadow-sm: 0 1px 3px rgb(15 18 23 / 0.05), 0 1px 2px rgb(15 18 23 / 0.03);
+  --shadow-md: 0 2px 8px rgb(15 18 23 / 0.06), 0 1px 3px rgb(15 18 23 / 0.04);
+  --shadow-lg: 0 6px 20px rgb(15 18 23 / 0.08), 0 2px 6px rgb(15 18 23 / 0.04);
+  --shadow-xl: 0 12px 32px rgb(15 18 23 / 0.1), 0 4px 10px rgb(15 18 23 / 0.04);
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--color-slate-50);
+}
+
+html[data-theme="dark"] {
+  background-color: var(--color-slate-950);
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply dark:bg-slate-950 dark:text-slate-100;
+  /* 자간을 좁히면 한글 문장이 한 덩어리로 읽힌다. */
+  letter-spacing: -0.01em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.025em;
+}
+
+/* 누르면 살짝 들어간다. 토스에서 제일 먼저 느껴지는 부분이라 기본값으로 뒀다. */
+button {
+  transition: transform 0.1s ease, background-color 0.15s ease, border-color 0.15s ease,
+    color 0.15s ease, box-shadow 0.15s ease;
+}
+
+button:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  button:not(:disabled):active {
+    transform: none;
+  }
+}
+
+/* 프롬프트 본문은 "보이는 그대로 복사되는 것" 이라 서식을 입히지 않고
+   줄바꿈과 공백을 그대로 지킨다. */
+.prompt-body {
+  @apply font-mono text-[13px] leading-relaxed whitespace-pre-wrap break-words;
+  letter-spacing: 0;
+}
+
+/* 불러오는 동안 자리를 대신 잡아 두는 덩어리.
+   실제로 들어올 것과 크기를 맞춰 둬야 내용이 도착할 때 화면이 튀지 않는다. */
+.skeleton {
+  @apply rounded-lg bg-slate-200 dark:bg-slate-800;
+  background-image: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.55), transparent);
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: var(--animate-shimmer);
+}
+
+html[data-theme="dark"] .skeleton {
+  background-image: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.05), transparent);
+}
+
+/* 본문 안의 {{변수}} 표시 */
+.prompt-variable {
+  @apply rounded px-1 py-0.5 font-semibold;
+  @apply bg-amber-100 text-amber-900 dark:bg-amber-400/15 dark:text-amber-200;
+}
+
+.prompt-variable--filled {
+  @apply bg-emerald-100 text-emerald-900 dark:bg-emerald-400/15 dark:text-emerald-200;
+}
+
+:where(input, textarea, select, button):focus-visible {
+  @apply outline-2 outline-offset-2 outline-indigo-600;
+}
