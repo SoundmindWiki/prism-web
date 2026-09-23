@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# 프론트 재배포 — 여기(로컬)에서 빌드해서 정적 파일만 올린다.
+#
+#   bin/deploy
+#
+# 서버에서 빌드하지 않는 이유는 램이 1GB 뿐이라 Nuxt 빌드가 메모리 부족으로 죽기 때문이다.
+# SPA(ssr: false) 라서 nuxt generate 결과가 순수 정적 파일이고, nginx 가 그대로 내준다.
+#
+# 배포 대상은 환경 변수로 준다. 저장소 맨 위 .deploy.env 에 적어 두면 알아서 읽는다 (.gitignore 에 있다).
+#
+#   PRISM_HOST=ubuntu@203.0.113.10
+#   PRISM_KEY=~/keys/prism.pem
+#   PRISM_DOMAIN=prism.example.com
+
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+[ -f "$ROOT/.deploy.env" ] && { set -a; . "$ROOT/.deploy.env"; set +a; }
+
+HOST="${PRISM_HOST:-}"
+KEY="${PRISM_KEY:-}"
+DOMAIN="${PRISM_DOMAIN:-}"
+
+if [ -z "$HOST" ] || [ -z "$KEY" ] || [ -z "$DOMAIN" ]; then
+  echo "PRISM_HOST · PRISM_KEY · PRISM_DOMAIN 이 필요합니다. 이 파일 맨 위 설명을 보세요." >&2
+  exit 1
+fi
+
+SSH_OPTS=(-i "${KEY/#\~/$HOME}" -o BatchMode=yes -o ConnectTimeout=20)
+
+say() { printf '\n\033[1m==> %s\033[0m\n' "$1"; }
+
+# SSH 가 가끔 연결 단계에서 끊긴다. 몇 번 다시 시도한다.
+retry() {
+  local attempt
+  for attempt in 1 2 3 4 5; do
+    "$@" && return 0
+    [ "$attempt" = 5 ] && return 1
+    echo "  연결이 끊겨 다시 시도합니다 ($attempt/5)..." >&2
+    sleep $((attempt * 4))
+  done
+}
+
+say "빌드 (로컬)"
+cd "$ROOT"
+rm -rf .output
+NUXT_PUBLIC_API_BASE="https://$DOMAIN/api/v1" pnpm exec nuxt generate
+
+say "정적 파일 업로드"
+retry rsync -az --delete -e "ssh ${SSH_OPTS[*]}" .output/public/ "$HOST:/srv/prism/web/"
+
+say "확인"
+sleep 2
+printf '  /    %s\n' "$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "https://$DOMAIN/")"
+echo
+echo "배포 완료: https://$DOMAIN"
