@@ -40,18 +40,22 @@ export function useMarkdownFile() {
   }
 
   /**
-   * .md 로 내려받는다. 토큰을 헤더로 보내야 해서 링크로는 못 걸고,
+   * 파일로 내려받는다. 토큰을 헤더로 보내야 해서 링크로는 못 걸고,
    * 글자로 받아 브라우저 안에서 파일을 만들어 내려준다.
+   *
+   * 파일 이름은 서버가 정한 것(prompt.download_filename)을 그대로 쓴다.
+   * 스크립트냐 아니냐를 양쪽에서 따로 따지면 언젠가 어긋난다.
    */
-  async function download(slug: string) {
+  async function download(slug: string, filename = `${slug}.md`) {
     const text = await request<string>(`/prompts/${encodeURIComponent(slug)}/markdown`, {
       responseType: 'text',
     })
 
-    const url = URL.createObjectURL(new Blob([text], { type: 'text/markdown;charset=utf-8' }))
+    const type = filename.endsWith('.sh') ? 'text/x-shellscript' : 'text/markdown'
+    const url = URL.createObjectURL(new Blob([text], { type: `${type};charset=utf-8` }))
     const link = document.createElement('a')
     link.href = url
-    link.download = `${slug}.md`
+    link.download = filename
     document.body.appendChild(link)
     link.click()
     link.remove()

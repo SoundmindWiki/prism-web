@@ -49,7 +49,7 @@ const categoryTrail = computed(() => {
 useHead({ title: () => prompt.value?.title ?? '문서' })
 const archiving = ref(false)
 
-// ---- .md 로 내려받기 ----
+// ---- 파일로 내려받기 (.md · 스크립트면 .sh) ----
 const { download } = useMarkdownFile()
 const downloading = ref(false)
 
@@ -58,8 +58,8 @@ async function downloadMarkdown() {
 
   downloading.value = true
   try {
-    await download(prompt.value.slug)
-    toast.success(`${prompt.value.slug}.md 로 내려받았습니다`)
+    await download(prompt.value.slug, prompt.value.download_filename)
+    toast.success(`${prompt.value.download_filename} 로 내려받았습니다`)
   } catch (caught) {
     toast.error(describeApiError(caught))
   } finally {
@@ -175,7 +175,7 @@ async function archive() {
             <svg class="size-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M10 3v10m0 0 4-4m-4 4-4-4M4 13v2a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-            {{ downloading ? '준비 중...' : 'MD로 내려받기' }}
+            {{ downloading ? '준비 중...' : `${prompt.download_filename.endsWith('.sh') ? 'SH' : 'MD'}로 내려받기` }}
           </button>
         </div>
 

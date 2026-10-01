@@ -95,6 +95,8 @@ export interface Prompt extends PromptCard {
   usage_notes: string | null
   variables: PromptVariable[]
   version_count: number
+  /** 내려받을 때 쓸 파일 이름. 스크립트면 .sh, 아니면 .md */
+  download_filename: string
 }
 
 export interface PromptVersion {
