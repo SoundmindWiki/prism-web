@@ -9,7 +9,7 @@ const props = defineProps<{
   prompt?: Prompt
   /** 새 문서를 사이드바의 폴더에서 시작했을 때 미리 골라 둘 카테고리 */
   initialCategory?: string
-  /** 폴더에 넣다가 확인이 필요해 넘어온 .md 초안 */
+  /** 폴더에 넣다가 확인이 필요해 넘어온 파일 초안 */
   draft?: PromptDraft | null
   submitLabel: string
   pending?: boolean
@@ -51,7 +51,7 @@ const examples = ref<Record<string, string>>(
 
 const detectedVariables = computed(() => extractVariables(body.value))
 
-// ---- .md 파일에서 불러오기 ----
+// ---- .md · .sh 파일에서 불러오기 ----
 // 서버가 파일을 읽어 폼에 채울 값만 돌려준다. 저장은 사용자가 확인하고 직접 누른다.
 const { parse: parseMarkdown } = useMarkdownFile()
 const { ask } = useConfirm()
@@ -165,15 +165,15 @@ function submit() {
           <svg class="size-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M10 13V3m0 0L6 7m4-4 4 4M4 13v2a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-2" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
-          {{ importing ? '읽는 중...' : 'MD 파일에서 불러오기' }}
+          {{ importing ? '읽는 중...' : '파일에서 불러오기' }}
         </button>
         <span class="text-[11px] text-slate-400 dark:text-slate-500">
-          앞부분에 제목·카테고리·도메인·태그를 적어 두면 함께 채워집니다
+          .md · .sh — md 는 앞부분에 적어 둔 제목·카테고리·도메인·태그까지 함께 채워집니다
         </span>
         <input
           ref="fileInput"
           type="file"
-          accept=".md,.markdown,.txt,text/markdown,text/plain"
+          accept=".md,.markdown,.txt,.sh,text/markdown,text/plain,application/x-sh,text/x-shellscript"
           class="hidden"
           data-testid="markdown-file"
           @change="onFileChosen"

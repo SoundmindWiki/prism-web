@@ -242,7 +242,7 @@ function onKeydown(event: KeyboardEvent) {
   event.preventDefault()
 }
 
-// ---- .md 파일 넣기 ----
+// ---- 파일 넣기 (.md · .sh) ----
 const fileInput = ref<HTMLInputElement | null>(null)
 const dropTarget = ref<{ slug: string, name: string } | null>(null)
 
@@ -263,13 +263,13 @@ async function onFilesChosen(event: Event) {
 }
 
 // ---- 끌어다 놓기 ----
-// 트리 안의 문서를 끌면 폴더 옮기기, 바탕화면의 .md 를 끌어오면 그 폴더에 넣기.
+// 트리 안의 문서를 끌면 폴더 옮기기, 바탕화면의 .md·.sh 를 끌어오면 그 폴더에 넣기.
 const PROMPT_TYPE = 'text/prism-prompt'
 const dragOverKey = ref<string | null>(null)
 let expandTimer: ReturnType<typeof setTimeout> | undefined
 
-function markdownFilesIn(transfer: DataTransfer | null) {
-  return [...(transfer?.files ?? [])].filter((file) => /\.(md|markdown|txt)$/i.test(file.name))
+function importableFilesIn(transfer: DataTransfer | null) {
+  return [...(transfer?.files ?? [])].filter((file) => /\.(md|markdown|txt|sh)$/i.test(file.name))
 }
 
 function onDragStart(event: DragEvent, row: Row) {
@@ -305,7 +305,7 @@ async function onDrop(event: DragEvent, row: Row) {
   dragOverKey.value = null
 
   const slug = event.dataTransfer?.getData(PROMPT_TYPE)
-  const files = markdownFilesIn(event.dataTransfer)
+  const files = importableFilesIn(event.dataTransfer)
 
   if (slug) {
     // 원래 있던 폴더에 도로 놓은 것이면 아무 일도 하지 않는다
@@ -466,8 +466,8 @@ function guideLeft(level: number) {
               type="button"
               tabindex="-1"
               class="rounded p-0.5 text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-slate-200"
-              :title="`${row.label} 에 MD 파일 넣기`"
-              :aria-label="`${row.label} 에 MD 파일 넣기`"
+              :title="`${row.label} 에 파일 넣기 (.md · .sh)`"
+              :aria-label="`${row.label} 에 파일 넣기`"
               @click.stop="pickFiles(row)"
             >
               <svg class="size-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
@@ -584,9 +584,9 @@ function guideLeft(level: number) {
       ref="fileInput"
       type="file"
       multiple
-      accept=".md,.markdown,.txt,text/markdown,text/plain"
+      accept=".md,.markdown,.txt,.sh,text/markdown,text/plain,application/x-sh,text/x-shellscript"
       class="hidden"
-      data-testid="folder-markdown"
+      data-testid="folder-import"
       @change="onFilesChosen"
     >
   </div>

@@ -2,7 +2,7 @@ import type { Category, Prompt } from '~/types'
 import type { ImportedPrompt } from './useMarkdownFile'
 
 /**
- * 사이드바 트리에서 하는 일들 — 폴더 만들기, 문서 옮기기, MD 파일 넣기.
+ * 사이드바 트리에서 하는 일들 — 폴더 만들기, 문서 옮기기, 파일(.md · .sh) 넣기.
  * 화면 그리는 일과 섞이면 컴포넌트가 금방 커져서 따로 뒀다.
  */
 export function useExplorerActions() {
@@ -47,7 +47,7 @@ export function useExplorerActions() {
   }
 
   /**
-   * 고른 .md 파일을 그 폴더에 문서로 넣는다.
+   * 고른 파일(.md · .sh)을 그 폴더에 문서로 넣는다.
    * 그대로 저장해도 되는 파일은 바로 저장하고, 제목을 못 찾았다든지 걸리는 게 있는 파일은
    * 저장하지 않고 작성 화면으로 넘겨 사람이 보고 저장하게 한다.
    */
